@@ -282,6 +282,7 @@ def post_horoscopes():
             "id": self.id,
             "lucky_time": self.lucky_time,
             "description":self.description,
+            "date_range":self.date_range,
             "color":self.color,
             "mood":self.mood,
             "compatibility":self.compatibility,
