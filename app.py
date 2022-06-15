@@ -1,10 +1,12 @@
 from flask import Flask, make_response, request, g, abort
 import os
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime as dt, timedelta
+from flask_login import LoginManager
 import secrets
 from flask_cors import CORS
 
@@ -12,14 +14,18 @@ class Config():
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get("SQLALCHEMY_TRACK_MODIFICATIONS")
 
-
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+moment=Moment()
+login=LoginManager()
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
-cors = CORS(app)
+if os.environ.get('FLASK_ENV') == 'development':
+    cors=CORS()
+
+    
 
 @basic_auth.verify_password
 def verify_password(email, password):
@@ -121,7 +127,7 @@ class Horoscope(db.Model):
     current_date = db.Column(db.String)
     lucky_number = db.Column(db.String)
     created_on = db.Column(db.DateTime, default=dt.utcnow)
-    user_id=db.Column(db.ForeignKey('user.id'))
+    users_id=db.Column(db.ForeignKey('user.id'))
 
    
 
@@ -147,11 +153,11 @@ class Horoscope(db.Model):
             "current_date": self.current_date,
             "lucky_number": self.lucky_number,
             "created_on":self.created_on,
-            "user_id":self.user_id,
+            "users_id":self.users_id,
             "user_first_name":self.use.first_name
             }
     def from_dict(self,data):
-        for field in ["lucky_time","description","date_range", "color","mood", "compatibility", "current_date", "lucky_number", "user_id"]:
+        for field in ["lucky_time","description","date_range", "color","mood", "compatibility", "current_date", "lucky_number", "users_id"]:
             if field in data:
                 setattr(self,field, data[field])
  
