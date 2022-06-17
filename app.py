@@ -22,7 +22,7 @@ moment=Moment()
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
 if os.environ.get('FLASK_ENV') == 'development':
-    cors=CORS()
+    cors=CORS(app)
 
     
 
@@ -214,7 +214,7 @@ def post_user():
     new_user.save()
     return make_response("success",200)
 
-@app.put('/user')
+@app.put('/user/<int:id>')
 @token_auth.login_required()
 def put_user():
     '''
@@ -244,6 +244,9 @@ def delete_user():
     g.current_user.delete()
     return make_response("success",200)
 
+@app.route("/members")
+def members():
+    return {"members": ["member1","member2","member3"]}
 
 @app.get('/horoscope')
 def get_horoscopes():
@@ -265,13 +268,13 @@ def get_horoscope(id):
     '''
     return make_response(Horoscope.query.filter_by(id=id).first().to_dict(), 200)
 
-@app.get('/horoscopes/<string:lucky_number>')
-def catch_a_zodiac(lucky_number):
-    # g.current_user.horoscopes.append(lucky_number)
-    z = Horoscope.query.filter_by(lucky_number=lucky_number).first()
-    current_user.collect_zodiac(z)
-    flash("Congrats you caught your horoscope!", 'primary')
-    return make_response("success",200)
+# @app.get('/horoscopes/<string:lucky_number>')
+# def catch_a_zodiac(lucky_number):
+#     # g.current_user.horoscopes.append(lucky_number)
+#     z = Horoscope.query.filter_by(lucky_number=lucky_number).first()
+#     current_user.collect_zodiac(z)
+#     flash("Congrats you caught your horoscope!", 'primary')
+#     return make_response("success",200)
 
 # Get all horoscopes in a User (by use id)
 # @app.get('/horoscope/user/<int:id>')
