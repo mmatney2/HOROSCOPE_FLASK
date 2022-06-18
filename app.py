@@ -87,9 +87,7 @@ class User(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def collect_zodiacs(self, zod):
-        self.horoscopes.append(zod)
-        db.session.commit()
+    
 
     def __repr__(self):
         return f'<{self.id}|{self.first_name}>'
@@ -216,7 +214,7 @@ def post_user():
 
 @app.put('/user/<int:id>')
 @token_auth.login_required()
-def put_user():
+def put_user(id):
     '''
         Changes the information fro the user that has the token
         TokenAuth: Bearer TOKEN
@@ -228,25 +226,23 @@ def put_user():
             "password" : STRING,
         }
     '''
-    data = request.get_json()
+    data = request.get_json(id)
     g.current_user.from_dict(data)
     db.session.commit()
     return make_response("success",200)
 
-@app.delete('/user')
+@app.delete('/user/<int:id>')
 @token_auth.login_required()
-def delete_user():
+def delete_user(id):
     '''
         Can only be used by the user with <id>
         TokenAuth: Bearer TOKEN
         Will delete User accesing the endpoint
     '''
-    g.current_user.delete()
+    g.current_user.delete(id)
     return make_response("success",200)
 
-@app.route("/members")
-def members():
-    return {"members": ["member1","member2","member3"]}
+
 
 @app.get('/horoscope')
 def get_horoscopes():
