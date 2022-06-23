@@ -227,19 +227,20 @@ def put_user(id):
         }
     '''
     data = request.get_json(id)
+    print(data)
     g.current_user.from_dict(data)
     db.session.commit()
     return make_response("success",200)
 
-@app.delete('/user/<int:id>')
+@app.delete('/user')
 @token_auth.login_required()
-def delete_user(id):
+def delete_user():
     '''
         Can only be used by the user with <id>
         TokenAuth: Bearer TOKEN
         Will delete User accesing the endpoint
     '''
-    g.current_user.delete(id)
+    g.current_user.delete()
     return make_response("success",200)
 
 
